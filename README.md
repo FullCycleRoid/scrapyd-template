@@ -2,7 +2,6 @@ scrapyd
 =======
 
 [![](https://github.com/easypi/docker-scrapyd/actions/workflows/build.yaml/badge.svg)](https://github.com/EasyPi/docker-scrapyd)
-
 [![](http://dockeri.co/image/easypi/scrapyd)](https://hub.docker.com/r/easypi/scrapyd)
 
 [scrapy][1] is an open source and collaborative framework for extracting the
@@ -20,31 +19,21 @@ utility which allows you to deploy your project to a Scrapyd server.
 
 [spidermon][6] is a framework to build monitors for Scrapy spiders.
 
-[scrapy-poet][7] is the web-poet Page Object pattern implementation for Scrapy.
+[pillow][7] is the Python Imaging Library to support the ImagesPipeline.
 
-[scrapy-playwright][8] is a Scrapy Download Handler which performs requests using Playwright for Python.
+This image is based on `debian:buster`, 7 latest python packages are installed:
 
-This image is based on `debian:bookworm`, 8 latest stable python packages are installed:
-
-- scrapy==2.11.2
-- scrapyd==1.5.0
-- scrapyd-client==2.0.0
-- scrapy-splash==0.9.0
-- scrapyrt==v0.16.0
-- spidermon==1.23.0
-- scrapy-poet==0.24.0
-- scrapy-playwright==v0.0.42
-
-```bash
-# fetch latest versions
-echo "scrapy scrapyd scrapyd-client scrapy-splash scrapyrt spidermon scrapy-poet scrapy-playwright" |
-  xargs -n1 pip --disable-pip-version-check index versions 2>/dev/null |
-    grep -v Available
-```
+- `scrapy`: git+https://github.com/scrapy/scrapy.git
+- `scrapyd`: git+https://github.com/scrapy/scrapyd.git
+- `scrapyd-client`: git+https://github.com/scrapy/scrapyd-client.git
+- `scrapy-splash`: git+https://github.com/scrapinghub/scrapy-splash.git
+- `scrapyrt`: git+https://github.com/scrapinghub/scrapyrt.git
+- `spidermon`: git+https://github.com/scrapinghub/spidermon.git
+- `pillow`: git+https://github.com/python-pillow/Pillow.git
 
 Please use this as base image for your own project.
 
-:warning: Scrapy (since [2.0.0][9]) has dropped support for Python 2.7, which reached end-of-life on 2020-01-01.
+:warning: Scrapy has dropped support for Python 2.7, which reached end-of-life on 2020-01-01.
 
 ## docker-compose.yml
 
@@ -59,7 +48,7 @@ services:
       - "6800:6800"
     volumes:
       - ./data:/var/lib/scrapyd
-      - /usr/local/lib/python3.11/dist-packages
+      - /usr/local/lib/python3.9/dist-packages
     restart: unless-stopped
 
   scrapy:
@@ -84,8 +73,8 @@ services:
 ## Run it as background-daemon for scrapyd
 
 ```bash
-$ docker compose up -d scrapyd
-$ docker compose logs -f scrapyd
+$ docker-compose up -d scrapyd
+$ docker-compose logs -f scrapyd
 $ docker cp scrapyd_scrapyd_1:/var/lib/scrapyd/items .
 $ tree items
 └── myproject
@@ -97,8 +86,8 @@ $ tree items
 $ mkvirtualenv -p python3 webbot
 $ pip install scrapy scrapyd-client
 
-$ scrapy startproject generic_template
-$ cd generic_template
+$ scrapy startproject myproject
+$ cd myproject
 $ setvirtualenvproject
 
 $ scrapy genspider myspider mydomain.com
@@ -106,8 +95,8 @@ $ scrapy edit myspider
 $ scrapy list
 
 $ vi scrapy.cfg
-$ scrapyd-client deploy --include-dependencies
-$ curl http://localhost:6800/schedule.json -d project=generic_template -d spider=redis_spider
+$ scrapyd-client deploy
+$ curl http://localhost:6800/schedule.json -d project=myproject -d spider=myspider
 $ firefox http://localhost:6800
 ```
 
@@ -161,17 +150,10 @@ $ docker-compose up -d scrapyrt
 $ curl -s 'http://localhost:9080/crawl.json?spider_name=toscrape-css&callback=parse&url=http://quotes.toscrape.com/&max_requests=5' | jq -c '.items[]'
 ```
 
-[//]: # (Additional)
-scrapyd-deploy --include-dependencies
-scrapyd-client deploy --include-dependencies
-
-
 [1]: https://github.com/scrapy/scrapy
 [2]: https://github.com/scrapy/scrapyd
 [3]: https://github.com/scrapy/scrapyd-client
 [4]: https://github.com/scrapinghub/scrapy-splash
 [5]: https://github.com/scrapinghub/scrapyrt
 [6]: https://github.com/scrapinghub/spidermon
-[7]: https://github.com/scrapinghub/scrapy-poet
-[8]: https://github.com/scrapy-plugins/scrapy-playwright
-[9]: <https://docs.scrapy.org/en/latest/news.html#scrapy-2-0-0-2020-03-03>
+[7]: https://github.com/python-pillow/Pillow
