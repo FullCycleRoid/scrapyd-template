@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   scrapyd:
     image: easypi/scrapyd
@@ -8,3 +9,36 @@ services:
       - ./data:/var/lib/scrapyd
       - /usr/local/lib/python3.9/dist-packages
     restart: unless-stopped
+
+#  scrapy:
+#    image: easypi/scrapyd
+#    command: bash
+#    volumes:
+#      - .:/code
+#    working_dir: /code
+#    restart: unless-stopped
+
+#  scrapyrt:
+#    image: easypi/scrapyd
+#    command: scrapyrt -i 0.0.0.0 -p 9080
+#    ports:
+#      - "9080:9080"
+#    volumes:
+#      - .:/code
+#    working_dir: /code
+#    restart: unless-stopped
+
+  scrapyd_redis:
+    image: redis:6.2-alpine
+    hostname: scrapyd_redis
+    container_name: scrapyd_redis
+    command:
+      - 'redis-server'
+    #      - '--requirepass myStrongPassword'
+    ports:
+      - "36379:6379"
+
+networks:
+  default:
+    external: true
+    name: generic-template
