@@ -84,8 +84,8 @@ services:
 ## Run it as background-daemon for scrapyd
 
 ```bash
-$ docker-compose up -d scrapyd
-$ docker-compose logs -f scrapyd
+$ docker compose up -d scrapyd
+$ docker compose logs -f scrapyd
 $ docker cp scrapyd_scrapyd_1:/var/lib/scrapyd/items .
 $ tree items
 └── myproject
@@ -97,8 +97,8 @@ $ tree items
 $ mkvirtualenv -p python3 webbot
 $ pip install scrapy scrapyd-client
 
-$ scrapy startproject myproject
-$ cd myproject
+$ scrapy startproject generic_template
+$ cd generic_template
 $ setvirtualenvproject
 
 $ scrapy genspider myspider mydomain.com
@@ -106,8 +106,8 @@ $ scrapy edit myspider
 $ scrapy list
 
 $ vi scrapy.cfg
-$ scrapyd-client deploy
-$ curl http://localhost:6800/schedule.json -d project=myproject -d spider=myspider
+$ scrapyd-client deploy --include-dependencies
+$ curl http://localhost:6800/schedule.json -d project=generic_template -d spider=redis_spider
 $ firefox http://localhost:6800
 ```
 
@@ -160,6 +160,11 @@ $ git clone https://github.com/scrapy/quotesbot.git .
 $ docker-compose up -d scrapyrt
 $ curl -s 'http://localhost:9080/crawl.json?spider_name=toscrape-css&callback=parse&url=http://quotes.toscrape.com/&max_requests=5' | jq -c '.items[]'
 ```
+
+[//]: # (Additional)
+scrapyd-deploy --include-dependencies
+scrapyd-client deploy --include-dependencies
+
 
 [1]: https://github.com/scrapy/scrapy
 [2]: https://github.com/scrapy/scrapyd
